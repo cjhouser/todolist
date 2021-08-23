@@ -12,3 +12,7 @@ type ops interface {
 type taskList struct {
 	tasks list.List
 }
+
+func (tl taskList) create(newTask string) {
+	tl.tasks.PushBack(newTask)
+}
