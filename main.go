@@ -6,8 +6,10 @@ import (
 	"os"
 )
 
+var dataStructure = taskArray{tasks: []task{}}
+
 type task struct {
-	name string `json:"Title"`
+	name string `json:"name"`
 }
 
 type ops interface {
@@ -47,7 +49,6 @@ func run(o ops) {
 }
 
 func main() {
-	dataStructure := taskArray{tasks: []task{}}
-	run(&dataStructure)
-	//handleRequests()
+	//run(&dataStructure)
+	handleRequests()
 }
