@@ -6,21 +6,21 @@ import (
 	"os"
 )
 
-var dataStructure = taskArray{tasks: []task{}}
+var dataStructure = taskArray{uid: 0, tasks: []task{}}
 
 type task struct {
+	id   string `json:"id"`
 	name string `json:"name"`
 }
 
 type ops interface {
 	create(string)
 	read() []string
-	update(int, string)
-	delete(int)
+	update(string, string)
+	delete(string)
 }
 
 func run(o ops) {
-	var index int
 	reader := bufio.NewReader(os.Stdin)
 	for {
 		fmt.Println("---Tasks---")
@@ -35,15 +35,15 @@ func run(o ops) {
 			input, _, _ := reader.ReadLine()
 			o.create(string(input))
 		case "update":
-			fmt.Print("Update index: ")
-			fmt.Scan(&index)
+			fmt.Print("Update id: ")
+			id, _, _ := reader.ReadLine()
 			fmt.Print("Update: ")
 			input, _, _ := reader.ReadLine()
-			o.update(index, string(input))
+			o.update(string(id), string(input))
 		case "delete":
-			fmt.Print("Delete index: ")
-			fmt.Scan(&index)
-			o.delete(index)
+			fmt.Print("Delete id: ")
+			id, _, _ := reader.ReadLine()
+			o.delete(string(id))
 		}
 	}
 }
