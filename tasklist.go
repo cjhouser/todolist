@@ -36,3 +36,11 @@ func (tl taskList) update(updateIndex int, update string) {
 	}
 	task.Value = update
 }
+
+func (tl taskList) delete(deleteIndex int) {
+	task := tl.tasks.Front()
+	for index := 1; index < deleteIndex; index++ {
+		task.Next()
+	}
+	tl.tasks.Remove(task)
+}
