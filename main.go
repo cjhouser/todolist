@@ -43,8 +43,6 @@ func run(o ops) {
 }
 
 func main() {
-	//dataStructure := taskList{tasks: list.New()}
-	//run(dataStructure)
-	dataStructure := taskArray{tasks: []string{}}
+	dataStructure := taskArray{tasks: []task{}}
 	run(&dataStructure)
 }

@@ -1,19 +1,22 @@
 package main
 
 type taskArray struct {
-	tasks []string
+	tasks []task
 }
 
 func (ta *taskArray) create(newTask string) {
-	ta.tasks = append(ta.tasks, newTask)
+	ta.tasks = append(ta.tasks, task{name: newTask})
 }
 
-func (ta taskArray) read() []string {
-	return ta.tasks
+func (ta taskArray) read() (result []string) {
+	for _, t := range ta.tasks {
+		result = append(result, t.name)
+	}
+	return
 }
 
 func (ta taskArray) update(updateIndex int, update string) {
-	ta.tasks[updateIndex-1] = update
+	ta.tasks[updateIndex-1].name = update
 }
 
 func (ta *taskArray) delete(deleteIndex int) {
