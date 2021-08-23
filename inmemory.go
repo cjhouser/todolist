@@ -7,32 +7,30 @@ type taskArray struct {
 	tasks []task
 }
 
-func (ta *taskArray) create(newTask string) {
-	ta.tasks = append(ta.tasks, task{Id: fmt.Sprint(ta.uid), Name: newTask})
+func (ta *taskArray) create(newTask task) {
+	newTask.Id = fmt.Sprint(ta.uid)
+	ta.tasks = append(ta.tasks, newTask)
 	ta.uid++
 }
 
-func (ta taskArray) readOne(id string) (result string) {
+func (ta taskArray) readOne(id string) (result task) {
 	for _, t := range ta.tasks {
 		if t.Id == id {
-			result = t.Name
+			result = t
 			break
 		}
 	}
 	return result
 }
 
-func (ta taskArray) read() (result []string) {
-	for _, t := range ta.tasks {
-		result = append(result, t.Name)
-	}
-	return
+func (ta taskArray) read() (result []task) {
+	return append(result, ta.tasks...)
 }
 
 func (ta taskArray) update(id string, updatedName string) {
-	for _, t := range ta.tasks {
-		if t.Id == id {
-			t.Name = updatedName
+	for i := 0; i < len(ta.tasks); i++ {
+		if ta.tasks[i].Id == id {
+			ta.tasks[i].Name = updatedName
 		}
 	}
 }
@@ -40,11 +38,7 @@ func (ta taskArray) update(id string, updatedName string) {
 func (ta *taskArray) delete(id string) {
 	for i, t := range ta.tasks {
 		if t.Id == id {
-			if i == len(ta.tasks)-1 {
-				ta.tasks = ta.tasks[:len(ta.tasks)-1]
-			} else {
-				ta.tasks = append(ta.tasks[:i], ta.tasks[i+1:]...)
-			}
+			ta.tasks = append(ta.tasks[:i], ta.tasks[i+1:]...)
 		}
 	}
 }
