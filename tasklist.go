@@ -2,14 +2,8 @@ package main
 
 import (
 	"container/list"
+	"fmt"
 )
-
-type ops interface {
-	create(string)
-	read() []interface{}
-	update(int, string)
-	delete(int)
-}
 
 type taskList struct {
 	tasks *list.List
@@ -19,9 +13,9 @@ func (tl taskList) create(newTask string) {
 	tl.tasks.PushBack(newTask)
 }
 
-func (tl taskList) read() (result []interface{}) {
+func (tl taskList) read() (result []string) {
 	for task := tl.tasks.Front(); task != nil; task = task.Next() {
-		result = append(result, task.Value)
+		result = append(result, fmt.Sprintf("%v", task.Value))
 	}
 	return
 }
