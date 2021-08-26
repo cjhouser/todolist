@@ -64,6 +64,18 @@ func (todoDb *TodoDB) SelectAllTodoItems() (items *DBTodoItems, err error) {
 	return todoItems, nil
 }
 
+func (todoDb *TodoDB) SelectSingleTodoItem(item *DBTodoItem) (todoItem *DBTodoItem, err error) {
+	todoItem = &DBTodoItem{}
+	rows, err := todoDb.db.Query(
+		sqlSelectSingleTodoItem,
+		item.Id)
+	if err != nil {
+		return nil, err
+	}
+	todoItem.scan(rows)
+	return todoItem, nil
+}
+
 // InsertTodoItem inserts a single DBTodoItem into the DB
 func (todoDb *TodoDB) InsertTodoItem(item *DBTodoItem) error {
 	_, err := todoDb.db.Exec(

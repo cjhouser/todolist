@@ -28,20 +28,23 @@ func returnAllTodoItems(w http.ResponseWriter, r *http.Request) {
 	log.Println("endpoint: todoItems")
 	items, err := db.SelectAllTodoItems()
 	if err != nil {
-		log.Printf("FAIL: create todoItem: %v\n", err)
+		log.Printf("FAIL: return all todoItems: %v\n", err)
 	}
 	json.NewEncoder(w).Encode(items)
 }
 
-/*
 func returnSingleTodoItem(w http.ResponseWriter, r *http.Request) {
 	log.Println("endpoint: single todoItem")
 	vars := mux.Vars(r)
 	key := vars["id"]
-	db.
-	json.NewEncoder(w).Encode(dataStructure.readOne(key))
+	var item *data.DBTodoItem
+	item.Id, _ = strconv.Atoi(key)
+	todoItem, err := db.SelectSingleTodoItem(item)
+	if err != nil {
+		log.Printf("FAIL: return single todoItem: %v\n", err)
+	}
+	json.NewEncoder(w).Encode(todoItem)
 }
-*/
 
 func updateTodoItem(w http.ResponseWriter, r *http.Request) {
 	log.Println("endpoint: update todoItem")
@@ -61,13 +64,11 @@ func deleteTodoItem(w http.ResponseWriter, r *http.Request) {
 	log.Println("endpoint: delete todoItem")
 	vars := mux.Vars(r)
 	key := vars["id"]
-	reqBody, _ := ioutil.ReadAll(r.Body)
 	var item data.DBTodoItem
 	item.Id, _ = strconv.Atoi(key)
-	json.Unmarshal(reqBody, &item)
 	err := db.DeleteTodoItem(&item)
 	if err != nil {
-		log.Printf("FAIL: create todoItem: %v\n", err)
+		log.Printf("FAIL: delete todoItem: %v\n", err)
 	}
 }
 
@@ -80,6 +81,6 @@ func handleRequests(dbp *data.TodoDB) {
 	// Parameterized
 	myRouter.HandleFunc("/task/{id}", updateTodoItem).Methods("PUT")
 	myRouter.HandleFunc("/task/{id}", deleteTodoItem).Methods("DELETE")
-	//myRouter.HandleFunc("/task/{id}", returnSingleTodoItem)
+	myRouter.HandleFunc("/task/{id}", returnSingleTodoItem)
 	log.Fatal(http.ListenAndServe(":10000", myRouter))
 }

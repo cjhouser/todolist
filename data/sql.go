@@ -4,6 +4,7 @@ const (
 	sqlCreateTodoItemsTable = `CREATE TABLE IF NOT EXISTS todoitems (id BIGINT PRIMARY KEY AUTO_INCREMENT, title TEXT NOT NULL)`
 	sqlInsertTodoItem       = `INSERT INTO todoitems (title) VALUES(?)`
 	sqlSelectAllTodoItems   = `SELECT id, title FROM todoitems`
+	sqlSelectSingleTodoItem = `SELECT id, title FROM todoitems WHERE id=?`
 	sqlUpdateTodoItem       = `UPDATE todoitems SET title=? WHERE id=?`
 	sqlDeleteTodoItem       = `DELETE FROM todoitems WHERE id=?`
 )
