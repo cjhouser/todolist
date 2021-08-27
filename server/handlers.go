@@ -12,8 +12,6 @@ import (
 	"github.com/gorilla/mux"
 )
 
-var db *data.TodoDB
-
 func createTodoItem(w http.ResponseWriter, r *http.Request) {
 	log.Println("endpoint: create todoItem")
 	reqBody, _ := ioutil.ReadAll(r.Body)
@@ -75,17 +73,4 @@ func deleteTodoItem(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Printf("FAIL: delete todoItem: %v\n", err)
 	}
-}
-
-func handleRequests(dbp *data.TodoDB) {
-	db = dbp
-	myRouter := mux.NewRouter().StrictSlash(true)
-	// Static
-	myRouter.HandleFunc("/tasks", returnAllTodoItems)
-	myRouter.HandleFunc("/task", createTodoItem).Methods("POST")
-	// Parameterized
-	myRouter.HandleFunc("/task/{id}", updateTodoItem).Methods("PUT")
-	myRouter.HandleFunc("/task/{id}", deleteTodoItem).Methods("DELETE")
-	myRouter.HandleFunc("/task/{id}", returnSingleTodoItem)
-	log.Fatal(http.ListenAndServe(":10000", myRouter))
 }
