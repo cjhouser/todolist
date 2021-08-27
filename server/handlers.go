@@ -12,80 +12,60 @@ import (
 	"github.com/gorilla/mux"
 )
 
-var db *data.TodoDB
-
-func createTodoItem(w http.ResponseWriter, r *http.Request) {
-	log.Println("endpoint: create todoItem")
+func (env *env) createTodoItem(w http.ResponseWriter, r *http.Request) {
 	reqBody, _ := ioutil.ReadAll(r.Body)
 	var item data.DBTodoItem
 	json.Unmarshal(reqBody, &item)
-	err := db.InsertTodoItem(&item)
+	err := env.todoDB.InsertTodoItem(&item)
 	if err != nil {
 		log.Printf("FAIL: create todoItem: %v\n", err)
 	}
 }
 
-func returnAllTodoItems(w http.ResponseWriter, r *http.Request) {
-	log.Println("endpoint: todoItems")
-	items, err := db.SelectAllTodoItems()
+func (env *env) returnAllTodoItems(w http.ResponseWriter, r *http.Request) {
+	items, err := env.todoDB.SelectAllTodoItems()
 	if err != nil {
 		log.Printf("FAIL: return all todoItems: %v\n", err)
 	}
 	json.NewEncoder(w).Encode(items)
 }
 
-func returnSingleTodoItem(w http.ResponseWriter, r *http.Request) {
-	log.Println("endpoint: single todoItem")
+func (env *env) returnSingleTodoItem(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	key, _ := strconv.Atoi(vars["id"])
 	item := data.DBTodoItem{&models.TodoItem{
 		Id:    key,
 		Title: "",
 	}}
-	todoItem, err := db.SelectSingleTodoItem(&item)
+	todoItem, err := env.todoDB.SelectSingleTodoItem(&item)
 	if err != nil {
 		log.Printf("FAIL: return single todoItem: %v\n", err)
 	}
 	json.NewEncoder(w).Encode(todoItem)
 }
 
-func updateTodoItem(w http.ResponseWriter, r *http.Request) {
-	log.Println("endpoint: update todoItem")
+func (env *env) updateTodoItem(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	key, _ := strconv.Atoi(vars["id"])
 	reqBody, _ := ioutil.ReadAll(r.Body)
 	var item data.DBTodoItem
 	json.Unmarshal(reqBody, &item)
 	item.Id = key
-	err := db.UpdateTodoItem(&item)
+	err := env.todoDB.UpdateTodoItem(&item)
 	if err != nil {
 		log.Printf("FAIL: update todoItem: %v\n", err)
 	}
 }
 
-func deleteTodoItem(w http.ResponseWriter, r *http.Request) {
-	log.Println("endpoint: delete todoItem")
+func (env *env) deleteTodoItem(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	key, _ := strconv.Atoi(vars["id"])
 	item := data.DBTodoItem{&models.TodoItem{
 		Id:    key,
 		Title: "",
 	}}
-	err := db.DeleteTodoItem(&item)
+	err := env.todoDB.DeleteTodoItem(&item)
 	if err != nil {
 		log.Printf("FAIL: delete todoItem: %v\n", err)
 	}
-}
-
-func handleRequests(dbp *data.TodoDB) {
-	db = dbp
-	myRouter := mux.NewRouter().StrictSlash(true)
-	// Static
-	myRouter.HandleFunc("/tasks", returnAllTodoItems)
-	myRouter.HandleFunc("/task", createTodoItem).Methods("POST")
-	// Parameterized
-	myRouter.HandleFunc("/task/{id}", updateTodoItem).Methods("PUT")
-	myRouter.HandleFunc("/task/{id}", deleteTodoItem).Methods("DELETE")
-	myRouter.HandleFunc("/task/{id}", returnSingleTodoItem)
-	log.Fatal(http.ListenAndServe(":10000", myRouter))
 }
