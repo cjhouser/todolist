@@ -65,14 +65,19 @@ func (todoDb *TodoDB) SelectAllTodoItems() (items *DBTodoItems, err error) {
 }
 
 func (todoDb *TodoDB) SelectSingleTodoItem(item *DBTodoItem) (todoItem *DBTodoItem, err error) {
-	todoItem = &DBTodoItem{}
-	rows, err := todoDb.db.Query(
+	row := todoDb.db.QueryRow(
 		sqlSelectSingleTodoItem,
 		item.Id)
 	if err != nil {
 		return nil, err
 	}
-	todoItem.scan(rows)
+	var id int
+	var title string
+	err = row.Scan(&id, &title)
+	if err != nil {
+		return nil, err
+	}
+	todoItem = &DBTodoItem{&models.TodoItem{Id: id, Title: title}}
 	return todoItem, nil
 }
 
