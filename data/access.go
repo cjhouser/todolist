@@ -37,26 +37,26 @@ func (todoItems *DBTodoItems) scan(rows *sql.Rows) error {
 
 // TodoDB provides methods for accessing DB data
 type TodoDB struct {
-	db *sql.DB
+	DB *sql.DB
 }
 
 // OpenDb opens a MySQL database with the specified dbname and dbuser
 func (todoDb *TodoDB) OpenDb(dbname string, dbuser string) error {
 	db, err := sql.Open("mysql", dbuser+":pass@/"+dbname)
-	todoDb.db = db
+	todoDb.DB = db
 	return err
 }
 
 // CreateTablesIfNotExists creates any MySQL tables that do not exist
 func (todoDb *TodoDB) CreateTablesIfNotExists() error {
-	_, err := todoDb.db.Exec(sqlCreateTodoItemsTable)
+	_, err := todoDb.DB.Exec(sqlCreateTodoItemsTable)
 	return err
 }
 
 // SelectAllTodoItems returns all rows from the DB as DBTodoItems
 func (todoDb *TodoDB) SelectAllTodoItems() (items *DBTodoItems, err error) {
 	todoItems := &DBTodoItems{}
-	rows, err := todoDb.db.Query(sqlSelectAllTodoItems)
+	rows, err := todoDb.DB.Query(sqlSelectAllTodoItems)
 	if err != nil {
 		return nil, err
 	}
@@ -65,7 +65,7 @@ func (todoDb *TodoDB) SelectAllTodoItems() (items *DBTodoItems, err error) {
 }
 
 func (todoDb *TodoDB) SelectSingleTodoItem(item *DBTodoItem) (todoItem *DBTodoItem, err error) {
-	row := todoDb.db.QueryRow(
+	row := todoDb.DB.QueryRow(
 		sqlSelectSingleTodoItem,
 		item.Id)
 	if err != nil {
@@ -83,7 +83,7 @@ func (todoDb *TodoDB) SelectSingleTodoItem(item *DBTodoItem) (todoItem *DBTodoIt
 
 // InsertTodoItem inserts a single DBTodoItem into the DB
 func (todoDb *TodoDB) InsertTodoItem(item *DBTodoItem) error {
-	_, err := todoDb.db.Exec(
+	_, err := todoDb.DB.Exec(
 		sqlInsertTodoItem,
 		item.Title)
 	return err
@@ -91,7 +91,7 @@ func (todoDb *TodoDB) InsertTodoItem(item *DBTodoItem) error {
 
 // UpdateTodoItem updates a single DBTodoItem within the DB
 func (todoDb *TodoDB) UpdateTodoItem(item *DBTodoItem) error {
-	_, err := todoDb.db.Exec(
+	_, err := todoDb.DB.Exec(
 		sqlUpdateTodoItem,
 		item.Title,
 		item.Id)
@@ -100,7 +100,7 @@ func (todoDb *TodoDB) UpdateTodoItem(item *DBTodoItem) error {
 
 // UpdateTodoItem updates a single DBTodoItem within the DB
 func (todoDb *TodoDB) DeleteTodoItem(item *DBTodoItem) error {
-	_, err := todoDb.db.Exec(
+	_, err := todoDb.DB.Exec(
 		sqlDeleteTodoItem,
 		item.Id)
 	return err
