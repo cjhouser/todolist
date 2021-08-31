@@ -2,6 +2,10 @@ package models
 
 import (
 	"database/sql"
+	"encoding/json"
+	"fmt"
+
+	"github.com/bradfitz/gomemcache/memcache"
 )
 
 const (
@@ -19,6 +23,7 @@ type Task struct {
 
 type TaskModel struct {
 	DB *sql.DB
+	MC *memcache.Client
 }
 
 func (m TaskModel) Insert(requestTask Task) error {
@@ -70,4 +75,16 @@ func (m TaskModel) Delete(requestTask Task) error {
 		sqlDelete,
 		requestTask.Id)
 	return err
+}
+
+func (m TaskModel) SingleCache(requestTask Task) (responseTask *Task, err error) {
+	fetchedItem, err := m.MC.Get(fmt.Sprintf("%d_task", requestTask.Id))
+	if err != nil {
+		return nil, err
+	}
+	err = json.Unmarshal(fetchedItem.Value, &responseTask)
+	if err != nil {
+		return nil, err
+	}
+	return responseTask, nil
 }

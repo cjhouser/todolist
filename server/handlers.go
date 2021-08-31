@@ -2,12 +2,14 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"strconv"
 
 	"github.com/CJHouser/tasklist/models"
+	"github.com/bradfitz/gomemcache/memcache"
 	"github.com/gorilla/mux"
 )
 
@@ -33,9 +35,25 @@ func (env *env) returnSingleTask(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	key, _ := strconv.Atoi(vars["id"])
 	requestTask := models.Task{Id: key}
-	responseTask, err := env.tasks.Single(requestTask)
+	responseTask, err := env.tasks.SingleCache(requestTask)
 	if err != nil {
 		log.Printf("returnSingleTask %v\n", err)
+		// Get from DB on cache error and miss
+		responseTask, err = env.tasks.Single(requestTask)
+		if err != nil {
+			log.Printf("returnSingleTask %v\n", err)
+			// Internal Server Error
+		}
+		responseTaskBytes, err := json.Marshal(responseTask)
+		if err != nil {
+			log.Printf("returnSingleTask %v\n", err)
+		}
+		responseTaskItem := memcache.Item{
+			Key:        fmt.Sprintf("%d_task", key),
+			Value:      responseTaskBytes,
+			Expiration: 5,
+		}
+		env.tasks.MC.Set(&responseTaskItem)
 	}
 	json.NewEncoder(w).Encode(responseTask)
 }
