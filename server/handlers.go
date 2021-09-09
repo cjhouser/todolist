@@ -13,7 +13,7 @@ import (
 	"github.com/gorilla/mux"
 )
 
-func (env *env) createTask(w http.ResponseWriter, r *http.Request) {
+func (env *taskEnvironment) createTask(w http.ResponseWriter, r *http.Request) {
 	reqBody, _ := ioutil.ReadAll(r.Body)
 	var task models.Task
 	json.Unmarshal(reqBody, &task)
@@ -23,7 +23,7 @@ func (env *env) createTask(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (env *env) returnAllTasks(w http.ResponseWriter, r *http.Request) {
+func (env *taskEnvironment) returnAllTasks(w http.ResponseWriter, r *http.Request) {
 	tasks, err := env.tasks.All()
 	if err != nil {
 		log.Printf("returnAllTasks: %v\n", err)
@@ -31,7 +31,7 @@ func (env *env) returnAllTasks(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(tasks)
 }
 
-func (env *env) returnSingleTask(w http.ResponseWriter, r *http.Request) {
+func (env *taskEnvironment) returnSingleTask(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	key, _ := strconv.Atoi(vars["id"])
 	requestTask := models.Task{Id: key}
@@ -58,7 +58,7 @@ func (env *env) returnSingleTask(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(responseTask)
 }
 
-func (env *env) updateTask(w http.ResponseWriter, r *http.Request) {
+func (env *taskEnvironment) updateTask(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	key, _ := strconv.Atoi(vars["id"])
 	reqBody, _ := ioutil.ReadAll(r.Body)
@@ -71,7 +71,7 @@ func (env *env) updateTask(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (env *env) deleteTask(w http.ResponseWriter, r *http.Request) {
+func (env *taskEnvironment) deleteTask(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	key, _ := strconv.Atoi(vars["id"])
 	requestTask := models.Task{Id: key}

@@ -18,7 +18,11 @@ const (
 	sqlCreateTasksTable = `CREATE TABLE IF NOT EXISTS tasks (id BIGINT PRIMARY KEY AUTO_INCREMENT, title TEXT NOT NULL)`
 )
 
-type env struct {
+type accountEnvironment struct {
+	accounts models.AccountModel
+}
+
+type taskEnvironment struct {
 	tasks models.TaskModel
 }
 
@@ -34,16 +38,21 @@ func main() {
 	log.Println("Connecting to cache")
 	mc := memcache.New("localhost:11211")
 	// Dependency injection
-	env := &env{
+	accountEnv := &accountEnvironment{
+		accounts: models.AccountModel{DB: db},
+	}
+	taskEnv := &taskEnvironment{
 		tasks: models.TaskModel{DB: db, MC: mc},
 	}
 	// Routes
 	myRouter := mux.NewRouter().StrictSlash(true)
-	myRouter.HandleFunc("/tasks", env.returnAllTasks)
-	myRouter.HandleFunc("/task", env.createTask).Methods("POST")
-	myRouter.HandleFunc("/task/{id}", env.updateTask).Methods("PUT")
-	myRouter.HandleFunc("/task/{id}", env.deleteTask).Methods("DELETE")
-	myRouter.HandleFunc("/task/{id}", env.returnSingleTask)
+	myRouter.HandleFunc("/users/new", accountEnv.signUp).Methods("POST")
+	myRouter.HandleFunc("/tasks", taskEnv.returnAllTasks)
+	myRouter.HandleFunc("/task", taskEnv.createTask).Methods("POST")
+	myRouter.HandleFunc("/task/{id}", taskEnv.updateTask).Methods("PUT")
+	myRouter.HandleFunc("/task/{id}", taskEnv.deleteTask).Methods("DELETE")
+	myRouter.HandleFunc("/task/{id}", taskEnv.returnSingleTask)
+
 	// Middleware
 	myRouter.Use(logging)
 	log.Println("Listening for requests")
