@@ -12,10 +12,11 @@ import (
 )
 
 const (
-	dbname              = "tasklistapp"
-	dbuser              = "root"
-	dbpass              = "pass"
-	sqlCreateTasksTable = `CREATE TABLE IF NOT EXISTS tasks (id BIGINT PRIMARY KEY AUTO_INCREMENT, title TEXT NOT NULL)`
+	dbname                 = "tasklistapp"
+	dbuser                 = "root"
+	dbpass                 = "pass"
+	sqlCreateTasksTable    = `CREATE TABLE IF NOT EXISTS tasks (id BIGINT PRIMARY KEY AUTO_INCREMENT, title TEXT NOT NULL)`
+	sqlCreateAccountsTable = `CREATE TABLE IF NOT EXISTS accounts (id BIGINT PRIMARY KEY AUTO_INCREMENT, username TEXT NOT NULL, password VARCHAR(60) NOT NULL, salt TEXT NOT NULL)`
 )
 
 type accountEnvironment struct {
@@ -34,6 +35,9 @@ func main() {
 	}
 	if _, err := db.Exec(sqlCreateTasksTable); err != nil {
 		log.Fatalf("unable to create table %v", err)
+	}
+	if _, err := db.Exec(sqlCreateAccountsTable); err != nil {
+		log.Fatalf("unable to create account %v", err)
 	}
 	log.Println("Connecting to cache")
 	mc := memcache.New("localhost:11211")
