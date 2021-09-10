@@ -48,8 +48,10 @@ func main() {
 	taskEnv := &taskEnvironment{
 		models.TaskModel{DB: db, MC: mc},
 	}
-	// Routes
 	myRouter := mux.NewRouter().StrictSlash(true)
+	// Static files
+	myRouter.PathPrefix("/static").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("../static/"))))
+	// Routes
 	myRouter.HandleFunc("/users/new", accountEnv.signUp).Methods("POST")
 	myRouter.HandleFunc("/tasks", taskEnv.returnAllTasks)
 	myRouter.HandleFunc("/task", taskEnv.createTask).Methods("POST")
