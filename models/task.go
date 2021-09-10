@@ -26,14 +26,14 @@ type TaskModel struct {
 	MC *memcache.Client
 }
 
-func (m TaskModel) Insert(requestTask Task) error {
+func (m TaskModel) TaskInsert(requestTask Task) error {
 	_, err := m.DB.Exec(
 		sqlInsert,
 		requestTask.Title)
 	return err
 }
 
-func (m TaskModel) All() (responseTasks []Task, err error) {
+func (m TaskModel) TaskAll() (responseTasks []Task, err error) {
 	rows, err := m.DB.Query(sqlAll)
 	if err != nil {
 		return nil, err
@@ -50,7 +50,7 @@ func (m TaskModel) All() (responseTasks []Task, err error) {
 	return responseTasks, nil
 }
 
-func (m TaskModel) Single(requestTask Task) (responseTask *Task, err error) {
+func (m TaskModel) TaskSingle(requestTask Task) (responseTask *Task, err error) {
 	row := m.DB.QueryRow(
 		sqlSingle,
 		requestTask.Id)
@@ -62,7 +62,7 @@ func (m TaskModel) Single(requestTask Task) (responseTask *Task, err error) {
 	return responseTask, nil
 }
 
-func (m TaskModel) Update(requestTask Task) error {
+func (m TaskModel) TaskUpdate(requestTask Task) error {
 	_, err := m.DB.Exec(
 		sqlUpdate,
 		requestTask.Title,
@@ -70,14 +70,14 @@ func (m TaskModel) Update(requestTask Task) error {
 	return err
 }
 
-func (m TaskModel) Delete(requestTask Task) error {
+func (m TaskModel) TaskDelete(requestTask Task) error {
 	_, err := m.DB.Exec(
 		sqlDelete,
 		requestTask.Id)
 	return err
 }
 
-func (m TaskModel) SingleCache(requestTask Task) (responseTask *Task, err error) {
+func (m TaskModel) TaskSingleCache(requestTask Task) (responseTask *Task, err error) {
 	fetchedItem, err := m.MC.Get(fmt.Sprintf("%d_task", requestTask.Id))
 	if err != nil {
 		return nil, err

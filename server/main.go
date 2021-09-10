@@ -20,11 +20,11 @@ const (
 )
 
 type accountEnvironment struct {
-	accounts models.AccountModel
+	models.AccountModel
 }
 
 type taskEnvironment struct {
-	tasks models.TaskModel
+	models.TaskModel
 }
 
 func main() {
@@ -43,10 +43,10 @@ func main() {
 	mc := memcache.New("localhost:11211")
 	// Dependency injection
 	accountEnv := &accountEnvironment{
-		accounts: models.AccountModel{DB: db},
+		models.AccountModel{DB: db},
 	}
 	taskEnv := &taskEnvironment{
-		tasks: models.TaskModel{DB: db, MC: mc},
+		models.TaskModel{DB: db, MC: mc},
 	}
 	// Routes
 	myRouter := mux.NewRouter().StrictSlash(true)

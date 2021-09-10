@@ -22,8 +22,12 @@ func (env *accountEnvironment) signUp(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	account.Password = hash
-	err = env.accounts.AccountInsert(account)
+	err = env.AccountInsert(account)
 	if err != nil {
 		log.Printf("createAccount: %v\n", err)
 	}
+}
+
+func (env *accountEnvironment) signIn(w http.ResponseWriter, r *http.Request) {
+	log.Println("not implemented")
 }

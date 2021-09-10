@@ -17,14 +17,14 @@ func (env *taskEnvironment) createTask(w http.ResponseWriter, r *http.Request) {
 	reqBody, _ := ioutil.ReadAll(r.Body)
 	var task models.Task
 	json.Unmarshal(reqBody, &task)
-	err := env.tasks.Insert(task)
+	err := env.TaskInsert(task)
 	if err != nil {
 		log.Printf("createTask: %v\n", err)
 	}
 }
 
 func (env *taskEnvironment) returnAllTasks(w http.ResponseWriter, r *http.Request) {
-	tasks, err := env.tasks.All()
+	tasks, err := env.TaskAll()
 	if err != nil {
 		log.Printf("returnAllTasks: %v\n", err)
 	}
@@ -35,11 +35,11 @@ func (env *taskEnvironment) returnSingleTask(w http.ResponseWriter, r *http.Requ
 	vars := mux.Vars(r)
 	key, _ := strconv.Atoi(vars["id"])
 	requestTask := models.Task{Id: key}
-	responseTask, err := env.tasks.SingleCache(requestTask)
+	responseTask, err := env.TaskSingleCache(requestTask)
 	if err != nil {
 		log.Printf("returnSingleTask %v\n", err)
 		// Get from DB on cache error and miss
-		responseTask, err = env.tasks.Single(requestTask)
+		responseTask, err = env.TaskSingle(requestTask)
 		if err != nil {
 			log.Printf("returnSingleTask %v\n", err)
 			// Internal Server Error
@@ -53,7 +53,7 @@ func (env *taskEnvironment) returnSingleTask(w http.ResponseWriter, r *http.Requ
 			Value:      responseTaskBytes,
 			Expiration: 5,
 		}
-		env.tasks.MC.Set(&responseTaskItem)
+		env.MC.Set(&responseTaskItem)
 	}
 	json.NewEncoder(w).Encode(responseTask)
 }
@@ -65,7 +65,7 @@ func (env *taskEnvironment) updateTask(w http.ResponseWriter, r *http.Request) {
 	var requestTask models.Task
 	json.Unmarshal(reqBody, &requestTask)
 	requestTask.Id = key
-	err := env.tasks.Update(requestTask)
+	err := env.TaskUpdate(requestTask)
 	if err != nil {
 		log.Printf("updateTask %v\n", err)
 	}
@@ -75,7 +75,7 @@ func (env *taskEnvironment) deleteTask(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	key, _ := strconv.Atoi(vars["id"])
 	requestTask := models.Task{Id: key}
-	err := env.tasks.Delete(requestTask)
+	err := env.TaskDelete(requestTask)
 	if err != nil {
 		log.Printf("deleteTask %v\n", err)
 	}

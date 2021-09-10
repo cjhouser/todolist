@@ -6,6 +6,7 @@ import (
 
 const (
 	sqlAccountInsert = `INSERT INTO accounts (username, password, salt) VALUES(?, ?, ?)`
+	sqlAccountSingle = `SELECT (username, password, salt) FROM accounts WHERE id=?`
 )
 
 type Account struct {
@@ -26,4 +27,8 @@ func (m AccountModel) AccountInsert(requestAccount Account) error {
 		requestAccount.Password,
 		requestAccount.Salt)
 	return err
+}
+
+func (m AccountModel) AccountSingle(requestAccount Account) error {
+	return nil
 }
