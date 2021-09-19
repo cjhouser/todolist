@@ -10,7 +10,7 @@ const (
 )
 
 type Account struct {
-	Id       int    `json:"id"`
+	Id       int64  `json:"id"`
 	Username string `json:"username"`
 	Password []byte `json:"password"`
 	Salt     []byte `json:"salt"`
@@ -29,6 +29,17 @@ func (m AccountModel) AccountInsert(requestAccount Account) error {
 	return err
 }
 
-func (m AccountModel) AccountSingle(requestAccount Account) error {
-	return nil
+func (m AccountModel) AccountSingle(requestAccount Account) (int64, error) {
+	result, err := m.DB.Exec(
+		sqlAccountSingle,
+	)
+	if err != nil {
+		return 0, err
+	}
+	id, err := result.LastInsertId()
+	if err != nil {
+		return 0, err
+	}
+	return id, err
+
 }
