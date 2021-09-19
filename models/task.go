@@ -9,11 +9,11 @@ import (
 )
 
 const (
-	sqlInsert = `INSERT INTO tasks (title) VALUES(?)`
-	sqlAll    = `SELECT id, title FROM tasks`
-	sqlSingle = `SELECT id, title FROM tasks WHERE id=?`
-	sqlUpdate = `UPDATE tasks SET title=? WHERE id=?`
-	sqlDelete = `DELETE FROM tasks WHERE id=?`
+	sqlTaskInsert = `INSERT INTO tasks (title) VALUES(?)`
+	sqlTaskAll    = `SELECT id, title FROM tasks`
+	sqlTaskSingle = `SELECT id, title FROM tasks WHERE id=?`
+	sqlTaskUpdate = `UPDATE tasks SET title=? WHERE id=?`
+	sqlTaskDelete = `DELETE FROM tasks WHERE id=?`
 )
 
 type Task struct {
@@ -28,13 +28,13 @@ type TaskModel struct {
 
 func (m TaskModel) TaskInsert(requestTask Task) error {
 	_, err := m.DB.Exec(
-		sqlInsert,
+		sqlTaskInsert,
 		requestTask.Title)
 	return err
 }
 
 func (m TaskModel) TaskAll() (responseTasks []Task, err error) {
-	rows, err := m.DB.Query(sqlAll)
+	rows, err := m.DB.Query(sqlTaskAll)
 	if err != nil {
 		return nil, err
 	}
@@ -52,7 +52,7 @@ func (m TaskModel) TaskAll() (responseTasks []Task, err error) {
 
 func (m TaskModel) TaskSingle(requestTask Task) (responseTask *Task, err error) {
 	row := m.DB.QueryRow(
-		sqlSingle,
+		sqlTaskSingle,
 		requestTask.Id)
 	responseTask = &Task{}
 	err = row.Scan(&responseTask.Id, &responseTask.Title)
@@ -64,7 +64,7 @@ func (m TaskModel) TaskSingle(requestTask Task) (responseTask *Task, err error) 
 
 func (m TaskModel) TaskUpdate(requestTask Task) error {
 	_, err := m.DB.Exec(
-		sqlUpdate,
+		sqlTaskUpdate,
 		requestTask.Title,
 		requestTask.Id)
 	return err
@@ -72,7 +72,7 @@ func (m TaskModel) TaskUpdate(requestTask Task) error {
 
 func (m TaskModel) TaskDelete(requestTask Task) error {
 	_, err := m.DB.Exec(
-		sqlDelete,
+		sqlTaskDelete,
 		requestTask.Id)
 	return err
 }
